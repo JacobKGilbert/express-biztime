@@ -2,8 +2,6 @@ const express = require('express')
 const router = new express.Router()
 const ExpressError = require('../expressError')
 const db = require('../db')
-const { route } = require('../app')
-const { arrowFunctionExpression } = require('@babel/types')
 
 /** Route for getting all companies from db */
 router.get('/', async (req, res, next) => {
