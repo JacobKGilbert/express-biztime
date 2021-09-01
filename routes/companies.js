@@ -15,18 +15,7 @@ router.get('/', async (req, res, next) => {
   }
 })
 
-/** Route for getting selected company from db by code */
-router.get('/:code', async (req, res, next) => {
-  try {
-    const { code } = req.params
-    const results = await db.query('SELECT * FROM companies WHERE code = $1', [code])
-    if (results.rows.length === 0) throw new ExpressError('Company not found', 404)
-    return res.status(200).json({ company: results.rows[0] })
-  } catch (err) {
-    return next(err)
-  }
-})
-
+/** Route for adding a new company to db */
 router.post('/', async (req, res, next) => {
   try {
     const { code, name, description } = req.body
@@ -34,8 +23,39 @@ router.post('/', async (req, res, next) => {
       `INSERT INTO companies (code, name, description)
       VALUES ($1, $2, $3)
       RETURNING code, name, description`,
-      [code, name, description])
+      [code, name, description]
+    )
     return res.status(201).json({ company: result.rows[0] })
+  } catch (err) {
+    return next(err)
+  }
+})
+
+/** Route for getting selected company from db by code */
+router.get('/:code', async (req, res, next) => {
+  try {
+    const { code } = req.params
+    const results = await db.query('SELECT * FROM companies WHERE code = $1', [code])
+    if (results.rows.length === 0) throw new ExpressError('Company not found.', 404)
+    return res.status(200).json({ company: results.rows[0] })
+  } catch (err) {
+    return next(err)
+  }
+})
+
+/** Route for updating company in db */
+router.patch('/:code', async (req, res, next) => {
+  try {
+    const { code } = req.params
+    const { name, description } = req.body
+    const result = await db.query(
+      `UPDATE companies SET name = $1, description = $2
+      WHERE code = $3
+      RETURNING code, name, description`,
+      [name, description, code]
+    )
+    if (results.rows.length === 0) throw new ExpressError('Company not found, cannot update.', 404)
+    return res.status(200).json({ company: result.rows[0] })
   } catch (err) {
     return next(err)
   }
