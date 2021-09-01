@@ -35,9 +35,9 @@ router.post('/', async (req, res, next) => {
 router.get('/:code', async (req, res, next) => {
   try {
     const { code } = req.params
-    const results = await db.query('SELECT * FROM companies WHERE code = $1', [code])
-    if (results.rows.length === 0) throw new ExpressError('Company not found.', 404)
-    return res.status(200).json({ company: results.rows[0] })
+    const result = await db.query('SELECT * FROM companies WHERE code = $1', [code])
+    if (result.rows.length === 0) throw new ExpressError('Company not found.', 404)
+    return res.status(200).json({ company: result.rows[0] })
   } catch (err) {
     return next(err)
   }
@@ -54,8 +54,20 @@ router.patch('/:code', async (req, res, next) => {
       RETURNING code, name, description`,
       [name, description, code]
     )
-    if (results.rows.length === 0) throw new ExpressError('Company not found, cannot update.', 404)
+    if (result.rows.length === 0) throw new ExpressError('Company not found, cannot update.', 404)
     return res.status(200).json({ company: result.rows[0] })
+  } catch (err) {
+    return next(err)
+  }
+})
+
+/** Route for updating company in db */
+router.delete('/:code', async (req, res, next) => {
+  try {
+    const { code } = req.params
+    const result = await db.query('DELETE FROM companies WHERE code = $1', [code])
+    if (result.rows.length === 0) throw new ExpressError('Company not found, cannot delete.', 404)
+    return res.status(200).json({ status: 'deleted' })
   } catch (err) {
     return next(err)
   }
