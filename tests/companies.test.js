@@ -41,3 +41,11 @@ describe('GET /companies', () => {
     expect(res.body).toEqual({ companies: [testComp] })
   })
 })
+
+describe('POST /companies', () => {
+  test('Post new company to db', async () => {
+    const res = await request(app).post('/companies').send(IBM)
+    expect(res.statusCode).toBe(201)
+    expect(res.body).toEqual({ company: IBM  })
+  })
+})
