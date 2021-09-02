@@ -67,3 +67,23 @@ describe('GET /companies/:code', () => {
     expect(res.statusCode).toBe(404)
   })
 })
+
+describe('PATCH /companies/:code', () => {
+  test('Update select company', async () => {
+    const updatedApple = { name: 'Apple', description: 'M1 Mac designer' }
+    const res = await request(app)
+      .patch(`/companies/${APPLE.code}`)
+      .send(updatedApple)
+    expect(res.statusCode).toBe(200)
+    expect(res.body).toEqual({ company: {
+      code: APPLE.code,
+      name: updatedApple.name,
+      description: updatedApple.description
+    } })
+  })
+  test('Returns 404 if item is not found', async () => {
+    const updatedMicrosoft = { name: 'Microsoft', description: 'Somewhat of a competitor' }
+    const res = await request(app).patch(`/companies/msft`).send(updatedMicrosoft)
+    expect(res.statusCode).toBe(404)
+  })
+})
