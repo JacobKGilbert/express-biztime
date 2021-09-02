@@ -62,7 +62,7 @@ describe('GET /companies/:code', () => {
     expect(res.statusCode).toBe(200)
     expect(res.body).toEqual({ company: appleWithInvoice })
   })
-  test('Returns 404 if item is not found', async () => {
+  test('Returns 404 if company is not found', async () => {
     const res = await request(app).get('/companies/msft')
     expect(res.statusCode).toBe(404)
   })
@@ -81,9 +81,17 @@ describe('PATCH /companies/:code', () => {
       description: updatedApple.description
     } })
   })
-  test('Returns 404 if item is not found', async () => {
+  test('Returns 404 if company is not found', async () => {
     const updatedMicrosoft = { name: 'Microsoft', description: 'Somewhat of a competitor' }
     const res = await request(app).patch(`/companies/msft`).send(updatedMicrosoft)
     expect(res.statusCode).toBe(404)
+  })
+})
+
+describe('DELETE /companies/:code', () => {
+  test('Delete select company', async () => {
+    const res = await request(app).delete(`/companies/${APPLE.code}`)
+    expect(res.statusCode).toBe(200)
+    expect(res.body).toEqual({ status: 'deleted' })
   })
 })
