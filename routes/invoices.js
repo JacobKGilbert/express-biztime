@@ -29,7 +29,7 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-/** Route for getting selected company from db by code */
+/** Route for getting selected invoice from db by id */
 router.get('/:id', async (req, res, next) => {
   try {
     const { id } = req.params
@@ -68,7 +68,7 @@ router.get('/:id', async (req, res, next) => {
   }
 })
 
-/** Route for updating company in db */
+/** Route for updating invoice in db */
 router.put('/:id', async (req, res, next) => {
   try {
     const { id } = req.params
@@ -105,13 +105,12 @@ router.put('/:id', async (req, res, next) => {
   }
 })
 
-/** Route for updating company in db */
+/** Route for updating invoice in db */
 router.delete('/:id', async (req, res, next) => {
   try {
     const { id } = req.params
     const result = await db.query('DELETE FROM invoices WHERE id = $1', [id])
-    if (result.rows.length === 0)
-      throw new ExpressError(`Invoice# ${id} not found.`, 404)
+
     return res.status(200).json({ 'status': 'deleted' })
   } catch (err) {
     return next(err)
