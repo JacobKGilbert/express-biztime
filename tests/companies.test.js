@@ -9,6 +9,12 @@ const APPLE = {
   name: 'Apple',
   description: 'iPhone maker'
 }
+const appleWithInvoice = {
+  code: 'apl',
+  name: 'Apple',
+  description: 'iPhone maker',
+  invoices: []
+}
 const IBM = {
   code: 'ibm',
   name: 'IBM',
@@ -47,5 +53,17 @@ describe('POST /companies', () => {
     const res = await request(app).post('/companies').send(IBM)
     expect(res.statusCode).toBe(201)
     expect(res.body).toEqual({ company: IBM  })
+  })
+})
+
+describe('GET /companies/:code', () => {
+  test('Get select company', async () => {
+    const res = await request(app).get(`/companies/${APPLE.code}`)
+    expect(res.statusCode).toBe(200)
+    expect(res.body).toEqual({ company: appleWithInvoice })
+  })
+  test('Returns 404 if item is not found', async () => {
+    const res = await request(app).get('/companies/msft')
+    expect(res.statusCode).toBe(404)
   })
 })
