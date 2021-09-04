@@ -5,34 +5,36 @@ const db = require('../db')
 
 router.get('/', async (req, res, next) => {
   try {
+    const results = await db.query(
+      `SELECT i.code AS ind_code, i.industry, c.code AS comp_code
+      FROM industries AS i
+      LEFT JOIN companies_industries AS ci
+        ON i.code = ci.ind_code
+      LEFT JOIN companies AS c
+        ON ci.comp_code = comp_code`
+    )
     const industries = []
-      const results = await db.query(
-        `SELECT i.code AS ind_code, i.industry, c.code AS comp_code
-        FROM industries AS i
-        LEFT JOIN companies_industries AS ci
-          ON i.code = ci.ind_code
-        LEFT JOIN companies AS c
-          ON ci.comp_code = comp_code`
-      )
-      for (let i = 0; i < results.rows.length; i++) {
-        const { ind_code, industry, comp_code } = results.rows[i];
-        const selInd = {
+    for (let i = 0; i < results.rows.length; i++) {
+      const { ind_code, industry, comp_code } = results.rows[i]
+      // Find whether industries array already has given industry object.
+      const found = industries.find(({ code }) => code === ind_code)
+      // If not found then add, Else simply push comp_code.
+      if (!found) {
+        const newInd = {
           code: ind_code,
           industry: industry,
           companies: []
         }
-        if (!industries.includes(selInd)) {
-          industries.push(selInd)
+        if (comp_code !== null) {
+          newInd.companies.push(comp_code)
         }
-        
+        industries.push(newInd)
+      } else {
+        if (comp_code !== null) {
+          found.companies.push(comp_code)
+        }
       }
-    
-      const companies = result.rows.map((i) => i.comp_code)
-      if (companies[0] !== null) {
-        selInd.companies = companies
-      }
-      
-    
+    }
     return res.status(200).json({ industries: industries })
   } catch (err) {
     console.log(err)
