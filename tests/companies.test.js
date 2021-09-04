@@ -9,12 +9,6 @@ const APPLE = {
   name: 'Apple',
   description: 'iPhone maker'
 }
-const appleWithInvoice = {
-  code: 'apl',
-  name: 'Apple',
-  description: 'iPhone maker',
-  invoices: []
-}
 const IBM = {
   code: 'ibm',
   name: 'IBM',
@@ -60,7 +54,7 @@ describe('GET /companies/:code', () => {
   test('Get select company', async () => {
     const res = await request(app).get(`/companies/${APPLE.code}`)
     expect(res.statusCode).toBe(200)
-    expect(res.body).toEqual({ company: appleWithInvoice })
+    expect(res.body).toEqual({ company: testComp })
   })
   test('Returns 404 if company is not found', async () => {
     const res = await request(app).get('/companies/msft')
